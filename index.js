@@ -5,11 +5,7 @@ import connectDB from './db/mongooseConnect.js';
 import dotenv from 'dotenv';
 import updateRouter from './router/updateRouter.js';
 import mainRouter from './router/mainRouter.js';
-import cors from 'cors';
 import provideRouter from './router/provideRouter.js';
-import PositionData from './db/models/PositionData.js';
-import PositionImage from './db/models/PositionImage.js';
-import readFile from './utils/readFile.js';
 
 dotenv.config();
 
@@ -20,7 +16,7 @@ app.use(
     extended: true,
   })
 );
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 connectDB();
 
