@@ -1,3 +1,3 @@
-const cors = { origin: 'http://localhost:3001' };
+const cors = { origin: 'https://phonomapdev.vercel.app/' };
 
 export default { cors };
