@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>phonomap data creator</title>
+    <style>
+        html {
+  min-width: 100%;
+  font-family: sans-serif;
+  overflow: hidden;
+}
+body {
+  min-width: 100%;
+  overflow: hidden;
+}
+h1 {
+  widows: 100%;
+  text-align: center;
+  margin: 3px;
+}
+#main_container {
+  display: flex;
+  flex-direction: row;
+  min-width: 100%;
+  justify-content: space-around;
+}
+#main_container div {
+  border: solid 5px black;
+  width: 45%;
+  padding: 20px;
+  max-height: 82vh;
+}
+#new_position_form {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}
+#main_container div * {
+  margin: 1%;
+}
+#new_position_form label {
+  margin: 1%;
+  text-transform: uppercase;
+}
+#list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#position_container {
+  min-width: 90%;
+  max-height: 500px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  border: unset;
+  background-color: black;
+  color: white;
+}
+#alert {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  background-color: white;
+  border: solid 5px black;
+  position: absolute;
+  z-index: 3;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+}
+#alert_content {
+  min-height: 70%;
+  width: 90%;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#alert button {
+  font-size: 16pt;
+}
+.alert_img {
+  max-height: 200px;
+}
+
+.position_in_list {
+  display: flex;
+  flex-direction: row;
+  height: 150px;
+  min-width: 90%;
+  background-color: white;
+  color: black;
+}
+
+.position_in_list .preview_img {
+    width: 100%;
+    object-fit: scale-down;
+}
+#nuovo_suono {
+  max-width: 100px;
+  padding: 8px;
+}
+#fiedls_nuovo_suono {
+  margin: 20px;
+}
+.souncloud_container {
+  min-width: 100%;
+}
+#sound_management_container {
+  min-width: 90%;
+}
+h2 {
+  border-top: solid 5px black;
+  width: 90%;
+  padding: 10px;
+  text-align: center;
+  text-transform: uppercase;
+}
+textarea {
+  min-height: 80px;
+}
+.text_container {
+    min-width: 65%;
+    overflow-y: scroll;
+}
+.img_container{
+    max-height: 150px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    text-align: center;
+}
+
+    </style>
+</head>
+<body>
+    <div id="alert">
+        <div id="alert_content"></div>
+        <button id="close_alert_html">close</button>
+    </div>
+    <h1>PHONOMAP DATA CREATOR</h1>
+    <div id="main_container">
+        <div id="new_position_form">
+            <div style="min-width: 90%;max-height: fit-content;">
+            <h2>import position list</h2><br>
+            <p><input type="file" id="imported_position_list" ></p>
+            <h2>download position list</h2><br>
+            <button id="download_list">download position list</button>
+            </div>
+            <div style="min-width: 90%;max-height: fit-content;">
+                <h1>CREATE NEW POSITION</h1>
+                <h2>Info</h2>
+                <label for="pos_title">title</label>
+                <input type="text" name="pos_title" id="pos_title" placeholder="position title">
+                <label for="username">author</label>
+                <input type="text" name="username" id="user_name" placeholder="author">
+                <h2>position</h2>
+                <p>
+                    <label for="latitude">latitude</label>
+                    <input type="number" name="latitude" id="latitude" value="0">
+                    <label for="longitude">longitude</label>
+                    <input type="number" name="longitude" id="longitude" value="0">
+                </p>
+                <h2>
+                    <button id="nuovo_suono">+</button>
+                    soundcloud urls
+                </h2>
+                    <p id="souncloud_container">
+                        <span class="new_sound_field">
+                            <input style="min-width: 70%;" type="text" name="soundcloud_url" data-id="default-id" class="soundcloud_url" placeholder="ex: https://www.soundcloud.com">
+                        </span>
+                    </p>
+                
+                <h2>image</h2>
+                <p>
+                    <span id="image_container"></span><br>
+                    <input type="file" name="img" id="img">
+                </p>
+                
+                <h2>description</h2>
+                <textarea style="min-width: 90%;" name="" id="description" cols="30" rows="10" placeholder="write desrciption here"></textarea><br>
+                <h2> </h2>
+                <button id="new_position_button">create new position</button>
+                <button id="clear_form_button">reset fields</button>
+            </div>
+        </div>
+        <div id="list">
+            <p id="position_index"></p>
+            <div#positi id="position_container">no positions here</div#position_inde>
+        </div>
+    </div>
+   <script>
+     (async() => {
+       const reqBody = {msg: 'uella'}
+       const data = await fetch('/', {
+         method: 'POST', 
+          headers: {
+            'Content-Type': 'application/json'
+          },
+         body: JSON.stringify(reqBody)
+        })
+       const rawData = await data.json();
+       const parsedData = JSON.parse(rawData)
+       
+     })()
+      //  alert('open this page with a laptop');
+var POSITION_LIST = [];
+
+var newPositionButton = document.getElementById('new_position');
+var htmlAlert = document.getElementById('alert');
+var alert_content = document.getElementById('alert_content');
+var positionList = document.getElementById('position_list');
+var souncloud_container = document.getElementById('souncloud_container');
+var image_container = document.getElementById('image_container');
+var positionIndex = 0;
+
+var pos_title = document.getElementById('pos_title');
+var import_list_button = document.getElementById('import_list');
+var download_list_button = document.getElementById('download_list');
+var user_name = document.getElementById('user_name');
+var latitude = document.getElementById('latitude');
+var longitude = document.getElementById('longitude');
+var soundcloud_url = document.getElementById('soundcloud_url');
+var check_url = document.getElementById('check_url');
+var img = document.getElementById('img');
+var description = document.getElementById('description');
+var new_position_button = document.getElementById('new_position_button');
+var nuovo_suono = document.getElementById('nuovo_suono');
+var imported_position_list = document.getElementById('imported_position_list');
+var clear_form_button = document.getElementById('clear_form_button');
+var close_alert_html_button = document.getElementById('close_alert_html');
+var position_index = document.getElementById('position_index');
+
+var position_container = document.getElementById('position_container');
+
+close_alert_html_button.addEventListener('click', function () {
+  htmlAlert.style.display = 'none';
+  alert_content.innerHTML = '';
+});
+
+clear_form_button.addEventListener('click', function () {
+  function clearContent(arrayOfNode) {
+    arrayOfNode.forEach(function (node) {
+      if (node.value) node.value = '';
+      if (node.innerHTML) node.innerHTML = '';
+    });
+  }
+  clearContent([pos_title, user_name, description, latitude, longitude]);
+  clearContent(Array.from(document.getElementsByClassName('soundcloud_url')));
+  image_container.innerHTML = '';
+});
+
+download_list_button.addEventListener('click', function () {
+  if (POSITION_LIST.length === 0) {
+    alert('to download something you must create at least 1 position');
+  } else {
+    var blob = new Blob([JSON.stringify({ data: POSITION_LIST })], {
+      type: 'text/json',
+    });
+    var d = new Date();
+    var virtual_a = document.createElement('a');
+    virtual_a.href = window.URL.createObjectURL(blob);
+    virtual_a.download = `PHONOMAP_JSON_POSITION_LIST_h${JSON.stringify(
+      d.toString()
+    )}.json`;
+    document.body.appendChild(virtual_a);
+    virtual_a.click();
+    document.body.removeChild(virtual_a);
+  }
+});
+
+new_position_button.addEventListener('click', function () {
+  collectNewPositionData();
+});
+
+var loadedFile;
+var isLoadedFileImg = false;
+img.addEventListener('change', function name(e) {
+  var isImg = /image/g.test(img.files[0].type);
+  loadedFile = img.files[0];
+  lastFileConverted = true;
+  if (isImg) {
+    convertToBase64(img.files[0]);
+    isLoadedFileImg = true;
+  }
+});
+
+imported_position_list.addEventListener('change', function name(e) {
+  var isJson = /json/g.test(imported_position_list.files[0].type);
+  var newList = imported_position_list.files[0];
+  if (isJson) {
+    var reader = new FileReader();
+    reader.readAsText(newList);
+    reader.onload = function () {
+      POSITION_LIST = [...JSON.parse(reader.result).data, ...POSITION_LIST];
+      updatePositionListInTag();
+    };
+  }
+});
+
+nuovo_suono.addEventListener('click', function () {
+  var id = buildId();
+  var container = document.createElement('p');
+  var input = document.createElement('input');
+  var deleteButton = document.createElement('button');
+
+  container.className = 'new_sound_field';
+  container.id = id;
+
+  deleteButton.innerHTML = 'x';
+  deleteButton.addEventListener('click', function () {
+    delete_sound_field(id);
+  });
+
+  input.style.minWidth = '70%';
+  input.type = 'text';
+  input.name = 'soundcloud_url';
+  input.className = 'soundcloud_url';
+  input.placeholder = 'ex: https://www.soundcloud.com';
+
+  container.appendChild(input);
+  container.appendChild(deleteButton);
+  souncloud_container.appendChild(container);
+});
+
+function delete_sound_field(id) {
+  var torem = document.getElementById(id);
+  torem.remove();
+}
+
+var lastFileConverted;
+function convertToBase64(file) {
+  var reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = function () {
+    lastFileConverted = reader.result;
+    image_container.innerHTML =
+      "<img class='alert_img' src='" +
+      lastFileConverted +
+      "' alt='loaded image' >";
+  };
+  reader.onerror = function (error) {
+    alert(error);
+  };
+}
+
+function diplayImgInAlert() {
+  if (lastFileConverted) {
+    if (isLoadedFileImg) {
+      image_container.innerHTML =
+        "<img class='alert_img' src='" +
+        lastFileConverted +
+        "' alt='loaded image' >";
+    } else {
+      alert_content.innerHTML =
+        '<h1>formato file sbagliato, <br>si possono caricare solo immagini</h1>';
+    }
+  } else {
+    alert_content.innerHTML = '<h1>nessun file selezionato</h1>';
+  }
+}
+
+function collectNewPositionData() {
+  if (checkIfAllFieldsAreFilled()) {
+    createNewPositionFromFields();
+  } else {
+    alert('to create a new position you must fill all fileds');
+  }
+}
+
+function checkIfAllFieldsAreFilled() {
+  return (
+    pos_title.value !== '' &&
+    user_name.value !== '' &&
+    latitude.value > 0 &&
+    longitude.value > 0 &&
+    latitude.value.toString() !== '' &&
+    // longitude.value.toString() !== '' &&
+    // soundcloud_url.value !== '' &&
+    // soundcloud_url.value !== 'https://' &&
+    description.value !== 'write desrciption here' &&
+    lastFileConverted !== '' &&
+    typeof lastFileConverted === 'string'
+  );
+}
+
+function buildId() {
+  var randomHex = () =>
+    Number(Math.round(Math.random() * 1000000000)).toString(16);
+  return (
+    randomHex() + '-' + randomHex() + '-' + randomHex() + '-' + randomHex()
+  );
+}
+
+function buildPositionObject() {
+  return {
+    id: buildId(),
+    title: pos_title.value,
+    author: user_name.value,
+    sounds: buildSoundArray(),
+    img: lastFileConverted,
+    position: [latitude.value, longitude.value],
+    description: description.value,
+  };
+}
+
+function buildSoundArray() {
+  var accumulator = [];
+  Array.from(document.getElementsByClassName('soundcloud_url')).forEach(
+    function (node) {
+      accumulator.push(node.value);
+    }
+  );
+  return accumulator;
+}
+
+function createNewPositionFromFields() {
+  POSITION_LIST.unshift(buildPositionObject());
+  updatePositionListInTag();
+}
+
+function updatePositionListInTag() {
+  position_container.innerHTML = '';
+  POSITION_LIST.forEach((p) => buildTagFromPoSition(p));
+  position_index.innerHTML = 'tot positions: ' + POSITION_LIST.length;
+  if (POSITION_LIST.length === 0) {
+    position_container.innerHTML = 'no positions here';
+  }
+}
+
+function buildTagFromPoSition(posObj) {
+  posObj.id = buildId();
+  //----------------------------------------------- elements
+  var container = document.createElement('div');
+  var textContainer = document.createElement('div');
+  var titleTag = document.createElement('h4');
+  var userTag = document.createElement('h5');
+  var latLongTag = document.createElement('p');
+  var imgPreview = document.createElement('img');
+  var deleteButton = document.createElement('button');
+  var downloadImageButton = document.createElement('button');
+  var imageInNewPositionButton = document.createElement('button');
+  var descriptionTag = document.createElement('p');
+  var imgContainer = document.createElement('span');
+
+  //----------------------------------------------- innerHTML
+  titleTag.innerHTML = '<strong>Title:</strong> ' + posObj.title;
+  userTag.innerHTML = '<strong>Author:</strong> ' + posObj.author;
+  latLongTag.innerHTML =
+    '<strong>Position:</strong> lat: ' +
+    posObj.position[0] +
+    ', long: ' +
+    posObj.position[1] +
+    '<br/><strong>Soundcloud urls:</strong><br/>';
+  imgPreview.src = posObj.img;
+  descriptionTag.innerHTML =
+    '<strong>Description:</strong> <br/>' + posObj.description;
+  deleteButton.innerHTML = '❌';
+  downloadImageButton.innerHTML = '⏬';
+  imageInNewPositionButton.innerHTML = '⚡';
+
+  //----------------------------------------------- style
+  //   imageInNewPositionButton.style.fontSize = '7pt';
+  //   downloadImageButton.style.fontSize = '7pt';
+  //   deleteButton.style.fontSize = '7pt';
+
+  //----------------------------------------------- className
+  container.className = 'position_in_list';
+  imgContainer.className = 'img_container';
+  textContainer.className = 'text_container';
+  titleTag.className = 'title';
+  userTag.className = 'author';
+  latLongTag.className = 'lat_long';
+  imgPreview.className = 'preview_img';
+  descriptionTag.className = 'description';
+
+  //----------------------------------------------- appendChild
+  textContainer.appendChild(titleTag);
+  textContainer.appendChild(userTag);
+  textContainer.appendChild(latLongTag);
+  //   textContainer.appendChild(deleteButton);
+  posObj.sounds.map(function (p) {
+    var link = document.createElement('a');
+    link.href = p;
+    link.innerHTML = p;
+    link.target = 'blank';
+    textContainer.appendChild(link);
+    textContainer.innerHTML = textContainer.innerHTML + '<br>';
+  });
+  textContainer.appendChild(descriptionTag);
+
+  imgContainer.appendChild(imageInNewPositionButton);
+  imgContainer.appendChild(deleteButton);
+  imgContainer.appendChild(downloadImageButton);
+  imgContainer.appendChild(imgPreview);
+
+  container.appendChild(imgContainer);
+  container.appendChild(textContainer);
+
+  position_container.appendChild(container);
+  position_container.scrollTo({ top: 0 });
+
+  //----------------------------------------------- EventListener
+  deleteButton.addEventListener('click', function () {
+    if (confirm('confirm deleting')) {
+      POSITION_LIST = POSITION_LIST.filter((p) => p.id !== posObj.id);
+      updatePositionListInTag();
+    }
+  });
+
+  imageInNewPositionButton.addEventListener('click', function () {
+    lastFileConverted = posObj.img;
+    image_container.innerHTML =
+      "<img class='alert_img' src='" +
+      lastFileConverted +
+      "' alt='loaded image' >";
+  });
+
+  downloadImageButton.addEventListener('click', function () {
+    var imgFormat = posObj.img.match(/(?<=data:image\/)\w*/gm)[0];
+    var virtual_a = document.createElement('a');
+    virtual_a.href = posObj.img;
+    virtual_a.download = `phonomap_image_position_id_${posObj.id}.${imgFormat}`;
+    document.body.appendChild(virtual_a);
+    virtual_a.click();
+    document.body.removeChild(virtual_a);
+  });
+}
+
+   </script>
+</body>
+</html>

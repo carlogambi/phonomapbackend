@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Changa:wght@200;800&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>phonomap backend</title>
+  </head>
+  <style>
+    :root {
+      --bg: #b8ffa0;
+      --text: #1b7e8d;
+      --radius: 14px;
+    }
+    h1 {
+      text-transform: uppercase;
+      letter-spacing: 4px;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: 'Changa', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    * {
+      margin: 5px;
+    }
+    strong {
+      font-size: 60px;
+      text-align: center;
+    }
+    button {
+      all: unset;
+      border: solid 4px var(--text);
+      border-radius: var(--radius);
+      padding: 10px;
+      margin: 5px;
+      text-align: center;
+      font-weight: bolder;
+    }
+    button:disabled {
+      all: unset;
+      border: solid 4px var(--text);
+      border-radius: var(--radius);
+      padding: 10px;
+      opacity: 0.3;
+    }
+    input {
+      all: unset;
+      border: solid 4px var(--text);
+      border-radius: var(--radius);
+      padding: 10px;
+      margin: 5px;
+      background-color: var(--bg);
+    }
+    input:disabled {
+      all: unset;
+      border: solid 4px var(--text);
+      border-radius: var(--radius);
+      padding: 10px;
+      opacity: 0.3;
+      background-color: var(--bg);
+    }
+    section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    p {
+      text-align: center;
+    }
+    .visible {
+      visibility: visible;
+    }
+    .hidden {
+      visibility: collapse;
+    }
+    a {
+      all: unset;
+      cursor: grab;
+      color: var(--text);
+    }
+  </style>
+  <body>
+    <strong>🤖PHONOMAP BACKEND🤖</strong>
+    <section id="login" class="visible">
+      <h1>verify your identity</h1>
+
+      <h4>email</h4>
+      <input type="text" name="email" id="email" />
+      <button id="btn_send_mail" onclick="sendCodeViaEmail()">SEND CODE</button>
+
+      <h1>verification code</h1>
+      <input type="text" name="code" id="code" /><br />
+      <button id="btn_login" onclick="verifyCode()">LOGIN</button>
+    </section>
+    <section id="userarea" class="hidden">
+      <h5 id="logged_as">logged as:</h5>
+      <h1>ADD NEW AUTHOR</h1>
+      <span>
+        <input type="text" id="new_author_input" />
+        <button id="btn_new_author" onclick="addAuthor()">ADD EMAIL</button>
+      </span>
+      <button>
+        <a href="data-creator"><strong>🔊DATA CREATOR🔊</strong></a>
+      </button>
+    </section>
+
+    <script>
+      var email_input = document.getElementById('email');
+      var code_input = document.getElementById('code');
+      var btn_login = document.getElementById('btn_login');
+      var new_author_input = document.getElementById('new_author_input');
+      var btn_send_mail = document.getElementById('btn_send_mail');
+      var userarea_section = document.getElementById('userarea');
+      var login_section = document.getElementById('login');
+      var logged_as = document.getElementById('logged_as');
+      code_input.disabled = true;
+      btn_login.disabled = true;
+      const cookies = getCookies(true);
+      if (cookies) {
+        code_input.value = cookies.email_code;
+        verifyCode();
+      }
+      function getCookies(noAlert) {
+        const rawCookies = document.cookie.split(/=|;/gm);
+        if (rawCookies.includes('phonomap_data')) {
+          const userData = rawCookies[rawCookies.indexOf('phonomap_data') + 1];
+          return JSON.parse(userData);
+        } else {
+          if (noAlert) {
+            return false;
+          } else {
+            alert('there are no user data, repeat login refreshing the page');
+          }
+        }
+      }
+      async function sendCodeViaEmail() {
+        var email = email_input.value;
+        if (email === '' || !email.match(/@/gm)) {
+          return alert('email not valid');
+        }
+        var operationResult = await fetch('/send_code_to_author', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        });
+        var response = await operationResult.json();
+        if (operationResult.status !== 200) {
+          return alert(response.message);
+        }
+        alert(response.message);
+        code_input.disabled = false;
+        btn_login.disabled = false;
+        btn_send_mail.disabled = true;
+        email_input.disabled = true;
+      }
+      async function verifyCode() {
+        var code = code_input.value;
+        if (code === '' || !code.match(/-/gm)) {
+          return alert('code not valid');
+        }
+        var operationResult = await fetch('/verify_code', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ code }),
+        });
+        var response = await operationResult.json();
+        if (operationResult.status !== 200) {
+          return alert(response.message);
+        }
+        logged_as.innerHTML =
+          logged_as.innerHTML + ' ' + email_input.value ||
+          getCookies().email_code;
+        userarea_section.className = 'visible';
+        document.cookie =
+          'phonomap_data=' +
+          JSON.stringify({
+            email_code: code,
+            email: email_input.value,
+          });
+        document.body.removeChild(login_section);
+      }
+      async function addAuthor() {
+        const email = new_author_input.value;
+        const { email_code } = getCookies();
+        if (email === '' || !email.match(/@/gm)) {
+          return alert('email not valid');
+        }
+        if (email_code === '' || !email_code.match(/-/gm)) {
+          return alert('something went wrong please refresh the page');
+        }
+        var operationResult = await fetch('update/add_author_email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ code: email_code, email_to_add: email }),
+        });
+        var response = await operationResult.json();
+        alert(response.message);
+      }
+    </script>
+  </body>
+</html>

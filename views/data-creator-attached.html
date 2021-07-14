@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Changa:wght@200;800&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>phonomap data creator</title>
+    <style>
+      :root {
+        --bg: #b8ffa0;
+        --text: #1b7e8d;
+        --radius: 14px;
+      }
+
+      html {
+        min-width: 100%;
+        font-family: 'Changa', sans-serif;
+
+        overflow: hidden;
+      }
+
+      body {
+        min-width: 100%;
+        overflow: hidden;
+        background-color: var(--bg);
+        color: var(--text);
+      }
+
+      h1 {
+        widows: 100%;
+        text-align: center;
+        margin: 3px;
+      }
+
+      #main_container {
+        display: flex;
+        flex-direction: row;
+        min-width: 100%;
+        justify-content: space-around;
+      }
+
+      #main_container div {
+        max-height: 82vh;
+      }
+
+      #new_position_form {
+        border: solid 5px var(--text);
+        display: none;
+        flex-direction: column;
+        overflow-y: scroll;
+        position: absolute;
+        background-color: var(--bg);
+        width: 90%;
+      }
+
+      #new_position_form label {
+        margin: 1%;
+        text-transform: uppercase;
+      }
+
+      #list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 95%;
+      }
+
+      #position_container {
+        min-width: 95%;
+        max-height: 500px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        border: unset;
+        color: white;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-around;
+      }
+
+      #alert {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        background-color: white;
+        border: solid 5px var(--text);
+        position: absolute;
+        z-index: 3;
+        top: 10%;
+        left: 10%;
+        right: 10%;
+        bottom: 10%;
+      }
+
+      #alert_content {
+        min-height: 70%;
+        width: 90%;
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #alert button {
+        font-size: 16pt;
+      }
+
+      .alert_img {
+        max-height: 200px;
+      }
+
+      .position_in_list {
+        display: flex;
+        width: 300px;
+        flex-direction: column;
+        height: 300px;
+        /* min-width: 90%; */
+        background-color: var(--bg);
+        padding: 12px;
+        color: var(--text);
+        margin: 1vh;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        border: solid 4px var(--text);
+      }
+
+      .position_in_list .preview_img {
+        width: 100%;
+        object-fit: scale-down;
+      }
+
+      #nuovo_suono {
+        max-width: 100px;
+        padding: 8px;
+      }
+
+      #fiedls_nuovo_suono {
+        margin: 20px;
+      }
+
+      .souncloud_container {
+        min-width: 100%;
+      }
+
+      #sound_management_container {
+        min-width: 90%;
+      }
+
+      h2 {
+        border-top: solid 5px var(--text);
+        width: 90%;
+        padding: 10px;
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      textarea {
+        min-height: 80px;
+      }
+
+      .button_container {
+        min-width: 100%;
+        /* overflow-y: scroll; */
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        margin: 5px;
+      }
+
+      .img_container {
+        max-height: 150px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        text-align: center;
+      }
+
+      .loading {
+        animation: mymove 2s infinite;
+        margin-top: 20%;
+        text-align: center;
+      }
+
+      .loading p {
+        text-align: center;
+      }
+
+      @keyframes mymove {
+        0% {
+          color: rgb(0, 225, 255);
+        }
+
+        50% {
+          color: rgb(230, 8, 130);
+        }
+
+        100% {
+          color: rgb(0, 225, 255);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="alert">
+      <div id="alert_content"></div>
+      <button id="close_alert_html">close</button>
+    </div>
+    <h1 id="main_title">PHONOMAP DATA CREATOR</h1>
+    <div id="main_container">
+      <div id="new_position_form">
+        <div style="min-width: 90%; max-height: fit-content">
+          <h1>CREATE NEW POSITION</h1>
+          <h2>Info</h2>
+          <label for="pos_title">title</label>
+          <input
+            type="text"
+            name="pos_title"
+            id="pos_title"
+            placeholder="position title"
+          />
+          <label for="username">author</label>
+          <input
+            type="text"
+            name="username"
+            id="user_name"
+            placeholder="author"
+          />
+          <h2>position</h2>
+          <p>
+            <label for="latitude">latitude</label>
+            <input type="number" name="latitude" id="latitude" value="0" />
+            <label for="longitude">longitude</label>
+            <input type="number" name="longitude" id="longitude" value="0" />
+          </p>
+          <h2>
+            <button id="nuovo_suono">+</button>
+            soundcloud urls
+          </h2>
+          <p id="souncloud_container">
+            <span class="new_sound_field">
+              <input
+                style="min-width: 70%"
+                type="text"
+                name="soundcloud_url"
+                data-id="default-id"
+                class="soundcloud_url"
+                placeholder="ex: https://www.soundcloud.com"
+              />
+            </span>
+          </p>
+
+          <h2>image</h2>
+          <p>
+            <span id="image_container"></span><br />
+            <input type="file" name="img" id="img" />
+          </p>
+
+          <h2>description</h2>
+          <textarea
+            style="min-width: 90%"
+            name=""
+            id="description"
+            cols="30"
+            rows="10"
+            placeholder="write desrciption here"
+          ></textarea
+          ><br />
+          <h2></h2>
+          <button id="new_position_button">create new position</button>
+          <button id="clear_form_button">reset fields</button>
+        </div>
+      </div>
+
+      <div id="list">
+        <div
+          style="
+            min-width: 90%;
+            max-height: fit-content;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            flex-wrap: wrap;
+          "
+        >
+          <span
+            >push in database
+            <button id="push_position_list">push</button></span
+          >
+          <span
+            >import position list
+            <input type="file" id="imported_position_list"
+          /></span>
+          <span
+            >download position list
+            <button id="download_list">download</button></span
+          >
+        </div>
+        <div id="position_container">no positions here</div>
+        <p id="position_index"></p>
+      </div>
+    </div>
+    <script>
+      var POSITION_LIST = [];
+      var main_container = document.getElementById('main_container');
+      var main_title = document.getElementById('main_title');
+
+      function getCookies() {
+        const rawCookies = document.cookie.split(/=|;/gm);
+        if (rawCookies.includes('phonomap_data')) {
+          const userData = rawCookies[rawCookies.indexOf('phonomap_data') + 1];
+          return JSON.parse(userData);
+        } else {
+          return false;
+        }
+      }
+      var loading = document.createElement('div');
+      const toggleloader = (control) => {
+        if (control) {
+          main_container.style.display = 'none';
+          main_title.style.display = 'none';
+          loading.innerHTML =
+            '<h1>LOADING DATA</h1><p>this could take a while</p>';
+          loading.className = 'loading';
+          document.body.appendChild(loading);
+        } else {
+          updatePositionListInTag();
+          document.body.removeChild(loading);
+          main_container.style.display = 'flex';
+          main_title.style.display = 'block';
+        }
+      };
+      const userdata = getCookies();
+      if (!userdata) {
+        document.location.replace(document.location.origin);
+      }
+      (async () => {
+        toggleloader(true);
+        document.body.appendChild(loading);
+        const data = await fetch('/get/phonomap_all_pack', {
+          method: 'GET',
+        });
+        const rawData = await data.json();
+        POSITION_LIST = rawData;
+        toggleloader(false);
+      })();
+
+      var newPositionButton = document.getElementById('new_position');
+      var htmlAlert = document.getElementById('alert');
+      var alert_content = document.getElementById('alert_content');
+      var positionList = document.getElementById('position_list');
+      var souncloud_container = document.getElementById('souncloud_container');
+      var image_container = document.getElementById('image_container');
+      var positionIndex = 0;
+
+      var pos_title = document.getElementById('pos_title');
+      var import_list_button = document.getElementById('import_list');
+      var download_list_button = document.getElementById('download_list');
+      var user_name = document.getElementById('user_name');
+      var latitude = document.getElementById('latitude');
+      var longitude = document.getElementById('longitude');
+      var soundcloud_url = document.getElementById('soundcloud_url');
+      var check_url = document.getElementById('check_url');
+      var img = document.getElementById('img');
+      var description = document.getElementById('description');
+      var new_position_button = document.getElementById('new_position_button');
+      var nuovo_suono = document.getElementById('nuovo_suono');
+      var imported_position_list = document.getElementById(
+        'imported_position_list'
+      );
+      var clear_form_button = document.getElementById('clear_form_button');
+      var close_alert_html_button = document.getElementById('close_alert_html');
+      var position_index = document.getElementById('position_index');
+
+      var position_container = document.getElementById('position_container');
+
+      var push_position_list_button =
+        document.getElementById('push_position_list');
+
+      push_position_list_button.addEventListener('click', async (e) => {
+        const file = new Blob([JSON.stringify(POSITION_LIST)], {
+          type: 'text/plain',
+        });
+        const formData = new FormData();
+        toggleloader(true);
+        formData.append('pack', file);
+        let pushResult = await fetch('/update/update_position_list', {
+          method: 'POST',
+          body: formData,
+        });
+        pushResult = await pushResult.json();
+        toggleloader(false);
+        alert(pushResult.message);
+      });
+
+      close_alert_html_button.addEventListener('click', function () {
+        htmlAlert.style.display = 'none';
+        alert_content.innerHTML = '';
+      });
+
+      clear_form_button.addEventListener('click', function () {
+        function clearContent(arrayOfNode) {
+          arrayOfNode.forEach(function (node) {
+            if (node.value) node.value = '';
+            if (node.innerHTML) node.innerHTML = '';
+          });
+        }
+        clearContent([pos_title, user_name, description, latitude, longitude]);
+        clearContent(
+          Array.from(document.getElementsByClassName('soundcloud_url'))
+        );
+        image_container.innerHTML = '';
+      });
+
+      download_list_button.addEventListener('click', function () {
+        if (POSITION_LIST.length === 0) {
+          alert('to download something you must create at least 1 position');
+        } else {
+          var blob = new Blob([JSON.stringify({ data: POSITION_LIST })], {
+            type: 'text/json',
+          });
+          var d = new Date();
+          var virtual_a = document.createElement('a');
+          virtual_a.href = window.URL.createObjectURL(blob);
+          virtual_a.download = `PHONOMAP_JSON_POSITION_LIST_h${JSON.stringify(
+            d.toString()
+          )}.json`;
+          document.body.appendChild(virtual_a);
+          virtual_a.click();
+          document.body.removeChild(virtual_a);
+        }
+      });
+
+      new_position_button.addEventListener('click', function () {
+        collectNewPositionData();
+      });
+
+      var loadedFile;
+      var isLoadedFileImg = false;
+      img.addEventListener('change', function name(e) {
+        var isImg = /image/g.test(img.files[0].type);
+        loadedFile = img.files[0];
+        lastFileConverted = true;
+        if (isImg) {
+          convertToBase64(img.files[0]);
+          isLoadedFileImg = true;
+        }
+      });
+
+      imported_position_list.addEventListener('change', function name(e) {
+        var isJson = /json/g.test(imported_position_list.files[0].type);
+        var newList = imported_position_list.files[0];
+        if (isJson) {
+          var reader = new FileReader();
+          reader.readAsText(newList);
+          reader.onload = function () {
+            POSITION_LIST = [
+              ...JSON.parse(reader.result).data,
+              ...POSITION_LIST,
+            ];
+            updatePositionListInTag();
+          };
+        }
+      });
+
+      nuovo_suono.addEventListener('click', function () {
+        var id = buildId();
+        var container = document.createElement('p');
+        var input = document.createElement('input');
+        var deleteButton = document.createElement('button');
+
+        container.className = 'new_sound_field';
+        container.id = id;
+
+        deleteButton.innerHTML = 'x';
+        deleteButton.addEventListener('click', function () {
+          delete_sound_field(id);
+        });
+
+        input.style.minWidth = '70%';
+        input.type = 'text';
+        input.name = 'soundcloud_url';
+        input.className = 'soundcloud_url';
+        input.placeholder = 'ex: https://www.soundcloud.com';
+
+        container.appendChild(input);
+        container.appendChild(deleteButton);
+        souncloud_container.appendChild(container);
+      });
+
+      function delete_sound_field(id) {
+        var torem = document.getElementById(id);
+        torem.remove();
+      }
+
+      var lastFileConverted;
+      function convertToBase64(file) {
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+          lastFileConverted = reader.result;
+          image_container.innerHTML =
+            "<img class='alert_img' src='" +
+            lastFileConverted +
+            "' alt='loaded image' >";
+        };
+        reader.onerror = function (error) {
+          alert(error);
+        };
+      }
+
+      function diplayImgInAlert() {
+        if (lastFileConverted) {
+          if (isLoadedFileImg) {
+            image_container.innerHTML =
+              "<img class='alert_img' src='" +
+              lastFileConverted +
+              "' alt='loaded image' >";
+          } else {
+            alert_content.innerHTML =
+              '<h1>formato file sbagliato, <br>si possono caricare solo immagini</h1>';
+          }
+        } else {
+          alert_content.innerHTML = '<h1>nessun file selezionato</h1>';
+        }
+      }
+
+      function collectNewPositionData() {
+        if (checkIfAllFieldsAreFilled()) {
+          createNewPositionFromFields();
+        } else {
+          alert('to create a new position you must fill all fileds');
+        }
+      }
+
+      function checkIfAllFieldsAreFilled() {
+        return (
+          pos_title.value !== '' &&
+          user_name.value !== '' &&
+          latitude.value > 0 &&
+          longitude.value > 0 &&
+          latitude.value.toString() !== '' &&
+          // longitude.value.toString() !== '' &&
+          // soundcloud_url.value !== '' &&
+          // soundcloud_url.value !== 'https://' &&
+          description.value !== 'write desrciption here' &&
+          lastFileConverted !== '' &&
+          typeof lastFileConverted === 'string'
+        );
+      }
+
+      function buildId() {
+        var randomHex = () =>
+          Number(Math.round(Math.random() * 1000000000)).toString(16);
+        return (
+          randomHex() +
+          '-' +
+          randomHex() +
+          '-' +
+          randomHex() +
+          '-' +
+          randomHex()
+        );
+      }
+
+      function buildPositionObject() {
+        return {
+          id: buildId(),
+          title: pos_title.value,
+          author: user_name.value,
+          sounds: buildSoundArray(),
+          img: lastFileConverted,
+          position: [latitude.value, longitude.value],
+          description: description.value,
+        };
+      }
+
+      function buildSoundArray() {
+        var accumulator = [];
+        Array.from(document.getElementsByClassName('soundcloud_url')).forEach(
+          function (node) {
+            accumulator.push(node.value);
+          }
+        );
+        return accumulator;
+      }
+
+      function createNewPositionFromFields() {
+        POSITION_LIST.unshift(buildPositionObject());
+        updatePositionListInTag();
+      }
+
+      function updatePositionListInTag() {
+        position_container.innerHTML = '';
+        POSITION_LIST.forEach((p) => buildTagFromPoSition(p));
+        position_index.innerHTML =
+          'tot positions: ' +
+          POSITION_LIST.length +
+          ', per cercare una posizione: Ctrl/Command + f';
+        if (POSITION_LIST.length === 0) {
+          position_container.innerHTML = 'no positions here';
+        }
+      }
+
+      function buildTagFromPoSition(posObj) {
+        posObj.id = buildId();
+        //----------------------------------------------- elements
+        var container = document.createElement('div');
+        var buttonContainer = document.createElement('div');
+        var titleTag = document.createElement('h4');
+        var userTag = document.createElement('h5');
+        var latLongTag = document.createElement('p');
+        var imgPreview = document.createElement('img');
+        var deleteButton = document.createElement('button');
+        var downloadImageButton = document.createElement('button');
+        var imageInNewPositionButton = document.createElement('button');
+        var descriptionTag = document.createElement('p');
+        var imgContainer = document.createElement('span');
+
+        //----------------------------------------------- innerHTML
+        titleTag.innerHTML = '' + posObj.title;
+        userTag.innerHTML = '<strong>Author:</strong> ' + posObj.author;
+        latLongTag.innerHTML =
+          '<strong>Position:</strong> lat: ' +
+          posObj.position[0] +
+          ', long: ' +
+          posObj.position[1] +
+          '<br/><strong>Soundcloud urls:</strong><br/>';
+        imgPreview.src = posObj.img;
+        descriptionTag.innerHTML =
+          '<strong>Description:</strong> <br/>' + posObj.description;
+        deleteButton.innerHTML = '❌';
+        downloadImageButton.innerHTML = '⏬';
+        imageInNewPositionButton.innerHTML = '⚡';
+
+        //----------------------------------------------- style
+        //   imageInNewPositionButton.style.fontSize = '7pt';
+        //   downloadImageButton.style.fontSize = '7pt';
+        //   deleteButton.style.fontSize = '7pt';
+
+        //----------------------------------------------- className
+        container.className = 'position_in_list';
+        imgContainer.className = 'img_container';
+        buttonContainer.className = 'button_container';
+        titleTag.className = 'title';
+        userTag.className = 'author';
+        latLongTag.className = 'lat_long';
+        imgPreview.className = 'preview_img';
+        descriptionTag.className = 'description';
+
+        //----------------------------------------------- EventListener
+        deleteButton.addEventListener('click', function () {
+          if (confirm('confirm deleting')) {
+            POSITION_LIST = POSITION_LIST.filter((p) => p.id !== posObj.id);
+            updatePositionListInTag();
+          }
+        });
+
+        imageInNewPositionButton.addEventListener('click', function () {
+          lastFileConverted = posObj.img;
+          image_container.innerHTML =
+            "<img class='alert_img' src='" +
+            lastFileConverted +
+            "' alt='loaded image' >";
+        });
+
+        downloadImageButton.onclick = function () {
+          var imgFormat = posObj.img.match(/(?<=data:image\/)\w*/gm)[0];
+          var virtual_a = document.createElement('a');
+          virtual_a.href = posObj.img;
+          virtual_a.download = `phonomap_image_position_id_${posObj.id}.${imgFormat}`;
+          document.body.appendChild(virtual_a);
+          virtual_a.click();
+          document.body.removeChild(virtual_a);
+        };
+        //----------------------------------------------- appendChild
+        buttonContainer.appendChild(deleteButton);
+        buttonContainer.appendChild(downloadImageButton);
+        container.appendChild(buttonContainer);
+        container.appendChild(titleTag);
+        buttonContainer.appendChild(imageInNewPositionButton);
+        container.appendChild(imgPreview);
+        container.appendChild(userTag);
+        container.appendChild(latLongTag);
+        //   buttonContainer.appendChild(deleteButton);
+        posObj.sounds.map(function (p) {
+          var link = document.createElement('a');
+          link.href = p;
+          link.innerHTML = p;
+          link.target = 'blank';
+          container.appendChild(link);
+          container.innerHTML = container.innerHTML + '<br>';
+        });
+        container.appendChild(descriptionTag);
+
+        position_container.appendChild(container);
+        position_container.scrollTo({ top: 0 });
+      }
+    </script>
+  </body>
+</html>
