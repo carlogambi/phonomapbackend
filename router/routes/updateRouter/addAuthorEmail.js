@@ -16,7 +16,7 @@ const addAuthorEmail = async (req, res) => {
     email_code: uuidv4(),
   });
   if (user) {
-    res.json({ message: email + ' added to database' });
+    res.json({ message: email_to_add + ' added to database' });
   } else {
     res.status(500).json({ message: 'cant insert user to database' });
   }
