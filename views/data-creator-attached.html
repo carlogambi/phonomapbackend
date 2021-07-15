@@ -215,8 +215,13 @@
     <h1 id="main_title">PHONOMAP DATA CREATOR</h1>
     <div id="main_container">
       <div id="new_position_form">
-        <div style="min-width: 90%; max-height: fit-content">
-          <h1>CREATE NEW POSITION</h1>
+        <div
+          style="min-width: 90%; max-height: fit-content; text-align: center"
+        >
+          <h1>
+            CREATE NEW POSITION
+            <button id="close_new_position_form">close</button>
+          </h1>
           <h2>Info</h2>
           <label for="pos_title">title</label>
           <input
@@ -289,17 +294,23 @@
             flex-wrap: wrap;
           "
         >
-          <span
-            >push in database
-            <button id="push_position_list">push</button></span
+          <span>
+            <button id="push_position_list">push in database</button></span
           >
           <span
             >import position list
             <input type="file" id="imported_position_list"
           /></span>
+          <span>
+            <button id="download_list">download position list</button></span
+          >
           <span
-            >download position list
-            <button id="download_list">download</button></span
+            ><button id="open_new_position_form">
+              create new position
+            </button></span
+          >
+          <span
+            ><button id="delete_all_position">DELETE ALL POSITION</button></span
           >
         </div>
         <div id="position_container">no positions here</div>
@@ -310,6 +321,14 @@
       var POSITION_LIST = [];
       var main_container = document.getElementById('main_container');
       var main_title = document.getElementById('main_title');
+
+      function attachDelegatedEventListener(id, callback) {
+        document.addEventListener('click', function (e) {
+          if (e.target && e.target.id == id) {
+            callback(e);
+          }
+        });
+      }
 
       function getCookies() {
         const rawCookies = document.cookie.split(/=|;/gm);
@@ -352,6 +371,12 @@
       })();
 
       var newPositionButton = document.getElementById('new_position');
+      var open_new_position_form = document.getElementById(
+        'open_new_position_form'
+      );
+      var close_new_position_form = document.getElementById(
+        'close_new_position_form'
+      );
       var htmlAlert = document.getElementById('alert');
       var alert_content = document.getElementById('alert_content');
       var positionList = document.getElementById('position_list');
@@ -377,11 +402,26 @@
       var clear_form_button = document.getElementById('clear_form_button');
       var close_alert_html_button = document.getElementById('close_alert_html');
       var position_index = document.getElementById('position_index');
+      var delete_all_position = document.getElementById('delete_all_position');
 
       var position_container = document.getElementById('position_container');
 
       var push_position_list_button =
         document.getElementById('push_position_list');
+
+      delete_all_position.addEventListener('click', () => {
+        if (confirm('confirm you want to DELETE ALL POSITION')) {
+          POSITION_LIST = [];
+          updatePositionListInTag();
+        }
+      });
+
+      open_new_position_form.addEventListener('click', () => {
+        new_position_form.style.display = 'flex';
+      });
+      close_new_position_form.addEventListener('click', () => {
+        new_position_form.style.display = 'none';
+      });
 
       push_position_list_button.addEventListener('click', async (e) => {
         const file = new Blob([JSON.stringify(POSITION_LIST)], {
@@ -654,23 +694,27 @@
         imgPreview.className = 'preview_img';
         descriptionTag.className = 'description';
 
+        deleteButton.id = Math.round(Math.random() * 100000) + '';
+        imageInNewPositionButton.id = Math.round(Math.random() * 100000) + '';
+        downloadImageButton.id = Math.round(Math.random() * 100000) + '';
+
         //----------------------------------------------- EventListener
-        deleteButton.addEventListener('click', function () {
+        attachDelegatedEventListener(deleteButton.id, function () {
           if (confirm('confirm deleting')) {
             POSITION_LIST = POSITION_LIST.filter((p) => p.id !== posObj.id);
             updatePositionListInTag();
           }
         });
-
-        imageInNewPositionButton.addEventListener('click', function () {
+        attachDelegatedEventListener(imageInNewPositionButton.id, function () {
           lastFileConverted = posObj.img;
+          new_position_form.style.display = 'flex';
           image_container.innerHTML =
             "<img class='alert_img' src='" +
             lastFileConverted +
             "' alt='loaded image' >";
         });
 
-        downloadImageButton.onclick = function () {
+        attachDelegatedEventListener(downloadImageButton.id, function () {
           var imgFormat = posObj.img.match(/(?<=data:image\/)\w*/gm)[0];
           var virtual_a = document.createElement('a');
           virtual_a.href = posObj.img;
@@ -678,7 +722,7 @@
           document.body.appendChild(virtual_a);
           virtual_a.click();
           document.body.removeChild(virtual_a);
-        };
+        });
         //----------------------------------------------- appendChild
         buttonContainer.appendChild(deleteButton);
         buttonContainer.appendChild(downloadImageButton);
