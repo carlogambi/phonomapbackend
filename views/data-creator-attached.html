@@ -500,10 +500,7 @@
           var reader = new FileReader();
           reader.readAsText(newList);
           reader.onload = function () {
-            POSITION_LIST = [
-              ...JSON.parse(reader.result).data,
-              ...POSITION_LIST,
-            ];
+            POSITION_LIST = [...JSON.parse(reader.result), ...POSITION_LIST];
             updatePositionListInTag();
           };
         }
