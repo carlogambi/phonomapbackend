@@ -14,7 +14,7 @@ const sendCodeToAuthor = async (req, res) => {
   }
   const code = uuidv4() + '';
   loggedUser.email_code = code;
-  await loggedUser.save();
+  // await loggedUser.save();
   const emailSended = sendEmail(email, template({ code }));
   console.log(email);
   res.json({
