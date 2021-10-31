@@ -16,6 +16,13 @@ mainRouter
       res.send(await readFile('./views/dashboard.html'))
     )
   );
+mainRouter
+  .route('/google90c3e8ce63e39bf3.html')
+  .get(
+    expressAsyncHandler(async (req, res) =>
+      res.send(await readFile('./views/google90c3e8ce63e39bf3.html'))
+    )
+  );
 
 mainRouter
   .route('/data-creator')
