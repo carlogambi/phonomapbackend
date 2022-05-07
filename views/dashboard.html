@@ -124,8 +124,8 @@
       var userarea_section = document.getElementById('userarea');
       var login_section = document.getElementById('login');
       var logged_as = document.getElementById('logged_as');
-      code_input.disabled = true;
-      btn_login.disabled = true;
+      //code_input.disabled = true;
+      //btn_login.disabled = true;
       const cookies = getCookies(true);
       if (cookies) {
         code_input.value = cookies.email_code;
@@ -160,7 +160,7 @@
         if (operationResult.status !== 200) {
           return alert(response.message);
         }
-        alert(response.message);
+        //alert(response.message);
         code_input.disabled = false;
         btn_login.disabled = false;
         btn_send_mail.disabled = true;
